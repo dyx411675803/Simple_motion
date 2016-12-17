@@ -92,7 +92,6 @@ void task_trajectory_generator_proc(void *arg)
                                 }else if(t <= t3){
                                         axis1_setpoint.Position = ((new_cmd.Position - (new_cmd.Velocity * new_cmd.Velocity) / new_cmd.Acceleration) / new_cmd.Velocity + 
                                                                   new_cmd.Velocity/ new_cmd.Acceleration) * new_cmd.Velocity - 0.5 * new_cmd.Deceleration * (t3 - t) * (t3 - t);
-                                        axis1_setpoint.Velocity = new_cmd.Velocity - new_cmd.Deceleration * (t - t2);
                                 }else {
                                         new_cmd.Done = true;
                                         new_cmd.Response = false;
