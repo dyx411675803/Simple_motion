@@ -74,8 +74,10 @@ void task_trajectory_generator_proc(void *arg)
                if(new_cmd.Request)
                {
                         t1 = new_cmd.Velocity / new_cmd.Acceleration;
-                        t2 = (new_cmd.Position - (new_cmd.Velocity * new_cmd.Velocity) / new_cmd.Acceleration) / new_cmd.Velocity + new_cmd.Velocity / new_cmd.Acceleration;
-                        t3 = (new_cmd.Position - (new_cmd.Velocity * new_cmd.Velocity) / new_cmd.Acceleration) / new_cmd.Velocity + 2 * new_cmd.Velocity / new_cmd.Acceleration;
+                        t2 = (new_cmd.Position - (new_cmd.Velocity * new_cmd.Velocity) / new_cmd.Acceleration) / new_cmd.Velocity + 
+			new_cmd.Velocity / new_cmd.Acceleration;
+                        t3 = (new_cmd.Position - (new_cmd.Velocity * new_cmd.Velocity) / new_cmd.Acceleration) / new_cmd.Velocity + 
+			2 * new_cmd.Velocity / new_cmd.Acceleration;
         		previous_0 = rt_timer_read() / 1000000000;  
         		new_cmd.Response = true;
                         while(new_cmd.Response){
