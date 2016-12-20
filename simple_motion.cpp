@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include "Axis.h"
 
 #include <native/task.h>
 #include <native/timer.h>
@@ -21,11 +22,13 @@ typedef struct
     double Jerk;
 } tPosCmd;
 
+/*
 typedef struct
 {
     double Position;
     double Velocity;
 } tAxisSetpoint;
+*/
 
 //Global variables
 
@@ -33,7 +36,7 @@ RT_TASK task_trajectory_generator;
 RT_TASK task_command_sender;
 
 tPosCmd new_cmd;
-tAxisSetpoint axis1_setpoint;
+Axis axis1_setpoint;
 
 int cycle_count = 0;
 

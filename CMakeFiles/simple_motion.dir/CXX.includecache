@@ -6,6 +6,8 @@
 
 #IncludeRegexTransform: 
 
+/home/rtt/simple_motion/Axis.h
+
 /home/rtt/simple_motion/simple_motion.cpp
 stdio.h
 -
@@ -15,6 +17,8 @@ unistd.h
 -
 sys/mman.h
 -
+Axis.h
+/home/rtt/simple_motion/Axis.h
 native/task.h
 -
 native/timer.h

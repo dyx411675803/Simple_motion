@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include "Axis.h"
 
 #include <native/task.h>
 #include <native/timer.h>
@@ -21,11 +22,13 @@ typedef struct
     double Jerk;
 } tPosCmd;
 
+/*
 typedef struct
 {
     double Position;
     double Velocity;
 } tAxisSetpoint;
+*/
 
 //Global variables
 
@@ -76,8 +79,10 @@ void task_trajectory_generator_proc(void *arg)
                if(new_cmd.Request)
                {
                         t1 = new_cmd.Velocity / new_cmd.Acceleration;
-                        t2 = (new_cmd.Position - (new_cmd.Velocity * new_cmd.Velocity) / new_cmd.Acceleration) / new_cmd.Velocity + new_cmd.Velocity / new_cmd.Acceleration;
-                        t3 = (new_cmd.Position - (new_cmd.Velocity * new_cmd.Velocity) / new_cmd.Acceleration) / new_cmd.Velocity + 2 * new_cmd.Velocity / new_cmd.Acceleration;
+                        t2 = (new_cmd.Position - (new_cmd.Velocity * new_cmd.Velocity) / new_cmd.Acceleration) / new_cmd.Velocity + 
+			new_cmd.Velocity / new_cmd.Acceleration;
+                        t3 = (new_cmd.Position - (new_cmd.Velocity * new_cmd.Velocity) / new_cmd.Acceleration) / new_cmd.Velocity + 
+			2 * new_cmd.Velocity / new_cmd.Acceleration;
         		previous_0 = rt_timer_read() / 1000000000;  
         		new_cmd.Response = true;
                         while(new_cmd.Response){
@@ -158,7 +163,7 @@ void task_command_sender_proc(void *arg)
                     new_cmd.Acceleration = 50;
                     new_cmd.Deceleration = 50;
                     new_cmd.Jerk = 0;
-		    printf("command sent!");
+		    printf("command sent!\n\n");
 		    break;
                 }
 
