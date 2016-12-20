@@ -65,11 +65,13 @@ void task_trajectory_generator_proc(void *arg)
 		 *       your program. It is used here in the critical loop
 		 *       only for demonstration purposes.
 		 */
-		printf("Task A Time since last turn: %ld.%06ld ms\n",
+
+		/*printf("Task A Time since last turn: %ld.%06ld ms\n",
 		       (long)(now - previous) / 1000000,
 		       (long)(now - previous) % 1000000);
 		       previous = now;
 
+		*/
                //  Add your code
                if(new_cmd.Request)
                {
@@ -79,8 +81,11 @@ void task_trajectory_generator_proc(void *arg)
         		previous_0 = rt_timer_read() / 1000000000;  
         		new_cmd.Response = true;
                         while(new_cmd.Response){
+				rt_task_wait_period(NULL);
                                 now = rt_timer_read() / 1000000000;
                                 t = now - previous_0;
+				printf("Task has been running for %ld.%06ld s\n",
+					(long)t , (long)(now - previous_0) % 1000000000);
                                 //Judge the motion phase
                                 if(t <= t1){
                                         axis1_setpoint.Position = 0.5 * new_cmd.Acceleration * t * t;
@@ -92,11 +97,12 @@ void task_trajectory_generator_proc(void *arg)
                                 }else if(t <= t3){
                                         axis1_setpoint.Position = ((new_cmd.Position - (new_cmd.Velocity * new_cmd.Velocity) / new_cmd.Acceleration) / new_cmd.Velocity + 
                                                                   new_cmd.Velocity/ new_cmd.Acceleration) * new_cmd.Velocity - 0.5 * new_cmd.Deceleration * (t3 - t) * (t3 - t);
+                                        axis1_setpoint.Velocity = new_cmd.Velocity - new_cmd.Deceleration * (t - t2);
                                 }else {
                                         new_cmd.Done = true;
                                         new_cmd.Response = false;
                                 }
-                                printf("axis1's position: %lf. axis1's velocity: %lf", axis1_setpoint.Position, axis1_setpoint.Velocity);
+                                printf("axis1's position: %lf.\naxis1's velocity: %lf\n\n", axis1_setpoint.Position, axis1_setpoint.Velocity);
                         }
                }
 	}
@@ -111,7 +117,8 @@ void task_command_sender_proc(void *arg)
 	 *            start time,
 	 *            period (here: 2 s)
 	 */
-	rt_task_set_periodic(NULL, TM_NOW, 2000000000);
+	
+	rt_task_set_periodic(NULL, TM_NOW, 1000000000);
 	previous = rt_timer_read();
 
         new_cmd.Request = false;
@@ -132,9 +139,11 @@ void task_command_sender_proc(void *arg)
 		 *       your program. It is used here in the critical loop
 		 *       only for demonstration purposes.
 		 */
-		printf("Task B Time since last turn: %ld.%06ld ms\n",
+		/*printf("Task B Time since last turn: %ld.%06ld ms\n",
 		       (long)(now - previous) / 1000000,
 		       (long)(now - previous) % 1000000);
+		*/
+
 		       previous = now;
                 cycle_count = cycle_count + 1;
                 printf("cycle_count:%d\n",cycle_count);
@@ -149,7 +158,8 @@ void task_command_sender_proc(void *arg)
                     new_cmd.Acceleration = 50;
                     new_cmd.Deceleration = 50;
                     new_cmd.Jerk = 0;
-
+		    printf("command sent!");
+		    break;
                 }
 
 	}
@@ -188,7 +198,9 @@ int main(int argc, char* argv[])
 	rt_task_start(&task_trajectory_generator, &task_trajectory_generator_proc, NULL);
 	rt_task_start(&task_command_sender, &task_command_sender_proc, NULL);
 
-        while(!new_cmd.Done);
+        while(!new_cmd.Done){
+		//if(kbhit()) new_cmd.Done = true;		
+	};
         printf("End! \n");
 	rt_task_delete(&task_trajectory_generator);
 	rt_task_delete(&task_command_sender);
